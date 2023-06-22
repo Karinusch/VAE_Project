@@ -1,0 +1,170 @@
+Organisation
+deadline 06.07
+Report (a lot of coding) max 4 pages Document structure of the code, processing, know that plugin is installed
+Presentation 07.07
+
+Project Goal: Implementation of an audio plugin for real-time auralization of a single sound source. To achieve this, an FFT-based convolution algorithm with real-time filter exchange will be implemented in C++, using the JUCE framework. 
+
+Meeting at 02.06.2023
+Step complete printed Hallo Word
+Next steps: FFT, GUI
+
+Installation:
+Reaper
+Visual Studio
+JUCE. 
+Umuts tut: https://www.youtube.com/watch?v=XJ8GfZbFkYM&ab_channel=Postartem
+
+
+Set up JUCE and build a first “Hello World” audio plugin using the JUCE framework. The goal of this task is to get familiar with the JUCE framework. The plugin should do nothing, only pass through the input audio. This empty plugin will be extended successively in the following tasks. 
+
+I would recommend the Create a basic Audio/MIDI plugin tutorial, part 1&2. 
+Compile, run, and debug your app in the native IDE for the platform(s) you want to target.
+Install the necessary dependencies for audio plug-in development,
+Create an Projucer project for a JUCE audio plug-in,
+Set up a debugging environment for audio plug-in development
+Create an audio plug-in with a basic GUI,
+Let your plug-in receive MIDI data.
+
+Note to programming: When passing information between these two it is best to consider the processor as the parent of the editor. There is only one plug-in processor whereas you can create multiple editors. Each editor has a reference to the processor such that it can edit or access information and parameters from the audio thread. It is the editor’s job to set and get information on this processor thread and not the other way around.
+
+
+
+
+3 targets
+sharedcode (basic, main func) - programm here
+pludeditor (gui stuff) - h or cpp
+plugproccesor (processing)
+standalone (create an exe file)
+vst3 
+
+
+PluginProcessor compile - Hello Word! Plugin
+next step 
+replace hello word through slider in GUI
+implement FFT 
+
+ Implement a fast convolution algorithm. 
+
+a. Use an FFT library (e.g. the one from the JUCE library) to convolve the input signal blockwise with an impulse response. For the block-wise convolution, the Overlap-Add or Overlap-Save method should be employed. 
+
+https://docs.juce.com/master/tutorial_simple_fft.html
+
+
+Block-wise convolution
+
+
+Overlap-Add
+Overlap-Save
+Input signal
+divided into overlapping blocks of a fixed size
+each block is convolved
+Output blocks
+overlapped and added together
+concatenated
+
+
+is more suitable when the impulse response is longer than the block size and requires more memory and time costs
+is preferred when the impulse response is shorter than the block size and offers easier implementation with better time resolution
+
+
+Store the results, add they part by part
+Store the Input blocks,  compute  
+circular convolution btw in blocks and filter => OUT only last B Samples
+
+
+
+Processing: Fast Convolution 
+
+Class Index  David:
+https://docs.juce.com/master/index.html
+
+Fast convolution:
+
+If you already want to read something about the real-time convolution, there is the Dissertation of Frank Wefers (see attachment) which is a very comprehensive work on this topic. However, this might be a bit overwhelming, and we can walk through the things that are really important in a meeting. 
+
+Until then, for a quick start, I just stumbled upon this blog entry on real-time convolution. I didn’t went through it in detail, but it seems to give a very good idea of the topic. 
+
+
+Motivation: faster multiplication that convolution ( if long sampler) 
+
+may be take a look at  JUCE convolution
+
+
+Take the input audio block through the function
+compile the whole plugin VST load in DAW (work in IDE test in DAW)
+
+HRTF - freq transform and multiply with freq spectrum of the input 
+we will become same HRTF File - Juce obj for loading files
+
+
+
+
+Important processing functions:
+
+void NewProjectAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock) {...}
+
+here load the filter and  preinitialsiation
+
+void NewProjectAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages){...}
+
+
+most important function is the ProcessBlock
+
+Audiobuffer get samples from DAW
+main func of proc get inp samles from DAW buffer store, 
+processing gener write back in audio buffer object 
+here implement conv and fft stuff
+
+(be sure that it os a real time func take not more time that it should take(-quiete fast sonst audio stuck) Block size depends on DAW ??? it is an obj with pointers to actual audio sample could regard as array length 155 (channel most left and right)
+
+
+dsp::FFT Class Reference
+
+https://ccrma.stanford.edu/~jos/juce_modules/classdsp_1_1FFT.html#a741278c596a0f050c7ba3aa496aae89f
+
+
+
+b. Also implement a basic GUI with a button to select and load different impulse response files (WAVE-format). 
+
+GUI
+
+one or two sliders too implement: 
+
+one button - functionality of the filter
+and one slider
+
+
+c. Extend the convolution to stereo to be able to load and convolve HRIRs. d. Extra points (optional): Handle differences in processing block size and impulse response length.
+
+
+3. Implement filter exchange. For a dynamic sound source (moving around the listener), the impulse response needs to be exchanged according to the audiosource direction selected by the listener. 
+
+a. Integrate a routine to load multiple HRIRs at once. These HRIRs form a dataset for multiple source directions. 
+
+b. Add an element to the GUI to enable the selection of different source directions in the horizontal plane (e.g. a slider, ranging from 0° to 359°). 
+
+c. Implement a method to exchange the impulse response according to the source direction in real time. 
+
+d. Extra points (optional): Find a way to reduce audible artifacts from exchanging the impulse response.
+
+
+Audio pluginHost alternative to Reaper
+2 ways to piano (dont really need it ) here we can test the plugin 
+
+C:\Progs\juce-7.0.5-windows\JUCE\extras\AudioPluginHost\Builds\VisualStudio2019\x64\Debug\App      Audio pluginHost
+
+automatical configure it in visual studio see tutorial
+
+
+
+
+ 
+
+
+
+
+
+
+
+
